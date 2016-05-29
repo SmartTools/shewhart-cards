@@ -3,8 +3,8 @@ package info.smart_tools.modules.storage;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.storage.RAMStorageChartGroup;
-import info.smart_tools.shewhart_charts.modules.storage.StorageChartGroup;
+import info.smart_tools.shewhart_charts.modules.storage.RAMStorageModule;
+import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -18,15 +18,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
-public class RAMStorageChartGroupTest {
-    private StorageChartGroup<Date, Double> storageChartGroup;
+public class RAMStorageModuleTest {
+    private StorageModule<Date, Double> storageModule;
     private DateFormat dateFormat;
     private List<ChartControlGroup<Date, Double>> controlGroups;
 
 
     @Before
     public void setUp() throws ParseException {
-        storageChartGroup = RAMStorageChartGroup.create();
+        storageModule = RAMStorageModule.create();
         dateFormat = new SimpleDateFormat();
 
         controlGroups = new LinkedList<>();
@@ -49,13 +49,13 @@ public class RAMStorageChartGroupTest {
         when(fourthGroup.getKey()).thenReturn(dateFormat.parse("04/04/2016 04:04 AM"));
         when(fiveGroup.getKey()).thenReturn(dateFormat.parse("05/05/2016 05:05 AM"));
 
-        storageChartGroup.save(controlGroups);
+        storageModule.save(controlGroups);
     }
 
     @Test
     public void getControlGroupsByBeginKey() throws ParseException {
         Date beginKey = dateFormat.parse("03/03/2016 03:03 AM");
-        List<ChartControlGroup<Date, Double>> groups = storageChartGroup.get(beginKey);
+        List<ChartControlGroup<Date, Double>> groups = storageModule.get(beginKey);
         assertEquals(groups.size(), 3);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("03/03/2016 03:03 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("04/04/2016 04:04 AM"));
@@ -66,7 +66,7 @@ public class RAMStorageChartGroupTest {
     public void getControlGroupsByBeginAndEndKeys() throws ParseException {
         Date beginKey = dateFormat.parse("02/02/2016 02:02 AM");
         Date endKey = dateFormat.parse("04/04/2016 04:04 AM");
-        List<ChartControlGroup<Date, Double>> groups = storageChartGroup.get(beginKey, endKey);
+        List<ChartControlGroup<Date, Double>> groups = storageModule.get(beginKey, endKey);
         assertEquals(groups.size(), 3);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("02/02/2016 02:02 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("03/03/2016 03:03 AM"));
@@ -75,7 +75,7 @@ public class RAMStorageChartGroupTest {
 
     @Test
     public void getAllControlGroups() throws ParseException {
-        List<ChartControlGroup<Date, Double>> groups = storageChartGroup.getAll();
+        List<ChartControlGroup<Date, Double>> groups = storageModule.getAll();
         assertEquals(groups.size(), 5);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("01/01/2016 01:01 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("02/02/2016 02:02 AM"));
@@ -87,7 +87,7 @@ public class RAMStorageChartGroupTest {
 
     @Test
     public void removeControlGroupsByKey() throws ParseException {
-        StorageChartGroup<Date, Double> storage = RAMStorageChartGroup.create();
+        StorageModule<Date, Double> storage = RAMStorageModule.create();
         storage.save(controlGroups);
 
         Date key = dateFormat.parse("03/03/2016 03:03 AM");
@@ -102,7 +102,7 @@ public class RAMStorageChartGroupTest {
 
     @Test
     public void removeControlGroupsByBeginAndEndKeys() throws ParseException {
-        StorageChartGroup<Date, Double> storage = RAMStorageChartGroup.create();
+        StorageModule<Date, Double> storage = RAMStorageModule.create();
         storage.save(controlGroups);
         Date beginKey = dateFormat.parse("02/02/2016 02:02 AM");
         Date endKey = dateFormat.parse("04/04/2016 04:04 AM");
@@ -115,7 +115,7 @@ public class RAMStorageChartGroupTest {
 
     @Test
     public void removeAllControlGroups() {
-        StorageChartGroup<Date, Double> storage = RAMStorageChartGroup.create();
+        StorageModule<Date, Double> storage = RAMStorageModule.create();
         storage.save(controlGroups);
         storage.removeAll();
         assertEquals(storage.size(), 0);

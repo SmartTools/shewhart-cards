@@ -7,23 +7,23 @@ import info.smart_tools.shewhart_charts.utils.ValidationUtils;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class GeneralVerificationModule implements VerificationChartModule {
-    private List<VerificationChartModule> verificationChartModules;
+public class GeneralVerificationModule implements VerificationModule {
+    private List<VerificationModule> verificationModules;
 
-    private GeneralVerificationModule(List<VerificationChartModule> verificationChartModules) {
-        this.verificationChartModules = verificationChartModules;
+    private GeneralVerificationModule(List<VerificationModule> verificationModules) {
+        this.verificationModules = verificationModules;
     }
 
-    public static GeneralVerificationModule create(@Nonnull List<VerificationChartModule> verificationChartModules) {
-        ValidationUtils.checkOnNullOrEmpty(verificationChartModules, "List of the validation chart is null or empty!");
-        return new GeneralVerificationModule(verificationChartModules);
+    public static GeneralVerificationModule create(@Nonnull List<VerificationModule> verificationModules) {
+        ValidationUtils.checkOnNullOrEmpty(verificationModules, "List of the validation chart is null or empty!");
+        return new GeneralVerificationModule(verificationModules);
     }
 
     @Override
     public <TKey extends Comparable<TKey>>
     boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> errors) {
-        for (VerificationChartModule verificationChartModule : verificationChartModules) {
-            verificationChartModule.verify(chartSnapshot, errors);
+        for (VerificationModule verificationModule : verificationModules) {
+            verificationModule.verify(chartSnapshot, errors);
         }
 
         return errors.isEmpty();

@@ -3,11 +3,12 @@ package info.smart_tools.shewhart_charts.alternative;
 import info.smart_tools.shewhart_charts.ControlChartException;
 import info.smart_tools.shewhart_charts.SmartControlChart;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.notification.NotificationChartModule;
-import info.smart_tools.shewhart_charts.modules.storage.StorageChartGroup;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.notification.NotificationModule;
+import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
+import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.utils.GroupFieldHelper;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.utils.ValidationUtils;
@@ -22,26 +23,22 @@ public class CChart<TKey extends Comparable<TKey>>
     private ChartSnapshotBuilder<TKey> snapshotBuilder;
 
     private CChart(
-            ChartSnapshotBuilder<TKey> snapshotBuilder,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            StorageModule<TKey, Double> storageModule,
+            VerificationModule verificationModule,
+            NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        super(storageChartGroup, verificationChartModule, notificationChartModule);
-        this.snapshotBuilder = snapshotBuilder;
+        super(storageModule, verificationModule, notificationModule);
+        this.snapshotBuilder = GeneralChartSnapshotBuilder.create();
     }
 
     public static <TKey extends Comparable<TKey>>
     CChart<TKey> create(
-            ChartSnapshotBuilder<TKey> snapshotFactory,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            @Nonnull StorageModule<TKey, Double> storageModule,
+            @Nonnull VerificationModule verificationModule,
+            @Nonnull NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        ValidationUtils.checkOnNull(snapshotFactory, "Snapshot factory");
-
-        return new CChart<>(snapshotFactory, storageChartGroup,
-                verificationChartModule, notificationChartModule);
+        return new CChart<>(storageModule,
+                verificationModule, notificationModule);
     }
 
     @Override

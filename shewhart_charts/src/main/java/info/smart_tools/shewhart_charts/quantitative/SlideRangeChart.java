@@ -3,11 +3,12 @@ package info.smart_tools.shewhart_charts.quantitative;
 import info.smart_tools.shewhart_charts.ControlChartException;
 import info.smart_tools.shewhart_charts.SmartControlChart;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.notification.NotificationChartModule;
-import info.smart_tools.shewhart_charts.modules.storage.StorageChartGroup;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.notification.NotificationModule;
+import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
+import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.utils.Coefficients;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.utils.ValidationUtils;
@@ -25,29 +26,25 @@ public class SlideRangeChart <TKey extends Comparable<TKey>>
 
     private SlideRangeChart(
             Coefficients coefficients,
-            ChartSnapshotBuilder<TKey> snapshotBuilder,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            StorageModule<TKey, Double> storageModule,
+            VerificationModule verificationModule,
+            NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        super(storageChartGroup, verificationChartModule, notificationChartModule);
+        super(storageModule, verificationModule, notificationModule);
         this.coefficients = coefficients;
-        this.snapshotBuilder = snapshotBuilder;
+        this.snapshotBuilder = GeneralChartSnapshotBuilder.create();
     }
 
     public static <TKey extends Comparable<TKey>>
     SlideRangeChart<TKey> create(
-            Coefficients coefficients,
-            ChartSnapshotBuilder<TKey> snapshotFactory,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            @Nonnull Coefficients coefficients,
+            @Nonnull StorageModule<TKey, Double> storageModule,
+            @Nonnull VerificationModule verificationModule,
+            @Nonnull NotificationModule notificationModule
     ) throws IllegalArgumentException {
         ValidationUtils.checkOnNull(coefficients, "Coefficients");
-        ValidationUtils.checkOnNull(snapshotFactory, "Snapshot factory");
-
-        return new SlideRangeChart<>(coefficients, snapshotFactory, storageChartGroup,
-                verificationChartModule, notificationChartModule);
+        return new SlideRangeChart<>(coefficients, storageModule,
+                verificationModule, notificationModule);
     }
 
     @Override

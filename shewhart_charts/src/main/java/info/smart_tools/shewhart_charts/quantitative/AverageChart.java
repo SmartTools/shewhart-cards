@@ -3,13 +3,13 @@ package info.smart_tools.shewhart_charts.quantitative;
 import info.smart_tools.shewhart_charts.ControlChartException;
 import info.smart_tools.shewhart_charts.SmartControlChart;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.notification.NotificationChartModule;
-import info.smart_tools.shewhart_charts.modules.storage.StorageChartGroup;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.notification.NotificationModule;
+import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
+import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.utils.Coefficients;
-import info.smart_tools.shewhart_charts.utils.GroupFieldHelper;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 
 import javax.annotation.Nonnull;
@@ -28,29 +28,25 @@ public class AverageChart<TKey extends Comparable<TKey>>
 
     private AverageChart(
             Coefficients coefficients,
-            ChartSnapshotBuilder<TKey> snapshotBuilder,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            StorageModule<TKey, Double> storageModule,
+            VerificationModule verificationModule,
+            NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        super(storageChartGroup, verificationChartModule, notificationChartModule);
+        super(storageModule, verificationModule, notificationModule);
         this.coefficients = coefficients;
-        this.snapshotBuilder = snapshotBuilder;
+        this.snapshotBuilder = GeneralChartSnapshotBuilder.create();
     }
 
     public static <TKey extends Comparable<TKey>>
     AverageChart<TKey> create(
             @Nonnull Coefficients coefficients,
-            @Nonnull ChartSnapshotBuilder<TKey> snapshotFactory,
-            @Nonnull StorageChartGroup<TKey, Double> storageChartGroup,
-            @Nonnull VerificationChartModule verificationChartModule,
-            @Nonnull NotificationChartModule notificationChartModule
+            @Nonnull StorageModule<TKey, Double> storageModule,
+            @Nonnull VerificationModule verificationModule,
+            @Nonnull NotificationModule notificationModule
     ) throws IllegalArgumentException {
         checkOnNull(coefficients, "Coefficients");
-        checkOnNull(snapshotFactory, "Snapshot factory");
-
-        return new AverageChart<>(coefficients, snapshotFactory, storageChartGroup,
-                verificationChartModule, notificationChartModule);
+        return new AverageChart<>(coefficients, storageModule,
+                verificationModule, notificationModule);
     }
 
     @Override

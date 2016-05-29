@@ -6,7 +6,7 @@ import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.modules.verification.criteria.EightCriteriaValidator;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.GeneralReasonFactory;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReason;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class EightCriteriaValidatorTest {
-    private VerificationChartModule eightCriteriaValidator;
+    private VerificationModule eightCriteriaValidator;
 
     @Before
     public void setUp() {

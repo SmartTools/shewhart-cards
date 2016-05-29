@@ -6,7 +6,7 @@ import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReas
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface VerificationChartModule {
+public interface VerificationModule {
     <TKey extends Comparable<TKey>>
     boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> reasons);
 }

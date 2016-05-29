@@ -6,7 +6,7 @@ import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.modules.verification.criteria.SecondCriteriaValidator;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.GeneralReasonFactory;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReason;
@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class SecondCriteriaValidationTest {
-    private VerificationChartModule secondCriteriaValidator;
+    private VerificationModule secondCriteriaValidator;
 
     @Before
     public void setUp() {

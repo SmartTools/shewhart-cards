@@ -3,11 +3,12 @@ package info.smart_tools.shewhart_charts.alternative;
 import info.smart_tools.shewhart_charts.ControlChartException;
 import info.smart_tools.shewhart_charts.SmartControlChart;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.notification.NotificationChartModule;
-import info.smart_tools.shewhart_charts.modules.storage.StorageChartGroup;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.notification.NotificationModule;
+import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshotBuilder;
+import info.smart_tools.shewhart_charts.snapshots.GeneralChartSnapshotBuilder;
 import info.smart_tools.shewhart_charts.utils.GroupFieldHelper;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 
@@ -25,28 +26,24 @@ public class PChart<TKey extends Comparable<TKey>>
 
     private PChart(
             int controlledNumber,
-            ChartSnapshotBuilder<TKey> snapshotBuilder,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            StorageModule<TKey, Double> storageModule,
+            VerificationModule verificationModule,
+            NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        super(storageChartGroup, verificationChartModule, notificationChartModule);
+        super(storageModule, verificationModule, notificationModule);
         this.controlledNumber = controlledNumber;
-        this.snapshotBuilder = snapshotBuilder;
+        this.snapshotBuilder = GeneralChartSnapshotBuilder.create();
     }
 
     public static <TKey extends Comparable<TKey>>
     PChart<TKey> create(
             int controlledNumber,
-            ChartSnapshotBuilder<TKey> snapshotFactory,
-            StorageChartGroup<TKey, Double> storageChartGroup,
-            VerificationChartModule verificationChartModule,
-            NotificationChartModule notificationChartModule
+            @Nonnull StorageModule<TKey, Double> storageModule,
+            @Nonnull VerificationModule verificationModule,
+            @Nonnull NotificationModule notificationModule
     ) throws IllegalArgumentException {
-        checkOnNull(snapshotFactory, "Snapshot factory");
-
-        return new PChart<>(controlledNumber, snapshotFactory, storageChartGroup,
-                verificationChartModule, notificationChartModule);
+        return new PChart<>(controlledNumber, storageModule,
+                verificationModule, notificationModule);
     }
 
     @Override

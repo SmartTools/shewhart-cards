@@ -5,7 +5,7 @@ import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReas
 
 import java.util.List;
 
-public interface NotificationChartModule {
+public interface NotificationModule {
     <TKey extends Comparable<TKey>>
     void notify(ChartSnapshot<TKey> chartSnapshot, List<SpecialReason<TKey>> errors);
 }

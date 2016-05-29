@@ -6,19 +6,19 @@ import info.smart_tools.shewhart_charts.utils.ValidationUtils;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class RAMStorageChartGroup<TKey extends Comparable<TKey>, TValue extends Number>
-        implements StorageChartGroup<TKey, TValue> {
+public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Number>
+        implements StorageModule<TKey, TValue> {
 
     private TreeMap<TKey, ChartControlGroup<TKey, TValue>> storage;
 
-    protected RAMStorageChartGroup() {
+    protected RAMStorageModule() {
         this.storage = new TreeMap<>();
     }
 
     public static
-    <TKey extends Comparable<TKey>, TValue extends Number> RAMStorageChartGroup<TKey, TValue>
+    <TKey extends Comparable<TKey>, TValue extends Number> RAMStorageModule<TKey, TValue>
     create() {
-        return new RAMStorageChartGroup<>();
+        return new RAMStorageModule<>();
     }
 
     @Override

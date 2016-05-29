@@ -2,7 +2,7 @@ package info.smart_tools.shewhart_charts.modules.verification.criteria;
 
 import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
-import info.smart_tools.shewhart_charts.modules.verification.VerificationChartModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReason;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReasonFactory;
 import info.smart_tools.shewhart_charts.utils.ValidationUtils;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FourthCriteriaValidator implements VerificationChartModule {
+public class FourthCriteriaValidator implements VerificationModule {
     private static final String CRITERIA_NAME = "FOURTH_CRITERIA";
     private SpecialReasonFactory reasonFactory;
     private int bound;
