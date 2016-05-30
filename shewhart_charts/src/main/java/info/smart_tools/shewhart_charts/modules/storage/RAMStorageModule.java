@@ -22,7 +22,7 @@ public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Numb
     }
 
     @Override
-    public void save(@Nonnull List<ChartControlGroup<TKey, TValue>> groups) {
+    public void insert(@Nonnull List<ChartControlGroup<TKey, TValue>> groups) throws InsertGroupsException {
         ValidationUtils.checkOnNullOrEmpty(groups, "Groups");
         for (ChartControlGroup<TKey, TValue> group : groups)
             storage.put(group.getKey(), group);
@@ -34,12 +34,14 @@ public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Numb
     }
 
     @Override
-    public List<ChartControlGroup<TKey, TValue>> getAll() {
-        return new ArrayList<>(storage.values());
+    public List<ChartControlGroup<TKey, TValue>> selectAll() throws SelectGroupsException {
+        return new LinkedList<>(storage.values());
     }
 
     @Override
-    public List<ChartControlGroup<TKey, TValue>> get(@Nonnull TKey beginKey, @Nonnull TKey endKey) {
+    public List<ChartControlGroup<TKey, TValue>> select(@Nonnull TKey beginKey, @Nonnull TKey endKey)
+            throws SelectGroupsException {
+
         ValidationUtils.checkOnNull(beginKey, "Begin key");
         ValidationUtils.checkOnNull(endKey, "End key");
 
@@ -56,7 +58,7 @@ public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Numb
     }
 
     @Override
-    public List<ChartControlGroup<TKey, TValue>> get(@Nonnull TKey beginKey) {
+    public List<ChartControlGroup<TKey, TValue>> select(@Nonnull TKey beginKey) throws SelectGroupsException {
         ValidationUtils.checkOnNull(beginKey, "Begin key");
 
         List<ChartControlGroup<TKey, TValue>> searchResult = new LinkedList<>();
@@ -76,13 +78,13 @@ public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Numb
     }
 
     @Override
-    public void remove(@Nonnull TKey key) {
+    public void delete(@Nonnull TKey key) throws DeleteGroupsException {
         ValidationUtils.checkOnNull(key, "Key");
         storage.remove(key);
     }
 
     @Override
-    public void remove(@Nonnull TKey beginKey, @Nonnull TKey endKey) {
+    public void delete(@Nonnull TKey beginKey, @Nonnull TKey endKey) throws DeleteGroupsException {
         ValidationUtils.checkOnNull(beginKey, "Begin key");
         ValidationUtils.checkOnNull(endKey, "End key");
 
@@ -96,7 +98,7 @@ public class RAMStorageModule<TKey extends Comparable<TKey>, TValue extends Numb
     }
 
     @Override
-    public void removeAll() {
+    public void deleteAll() throws DeleteGroupsException {
         storage = new TreeMap<>();
     }
 }

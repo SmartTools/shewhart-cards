@@ -15,6 +15,7 @@ import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.utils.ValidationUtils;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,12 +83,13 @@ public class RangeChart<TKey extends Comparable<TKey>>
 
     @Override
     protected List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, Double>> controlGroups) {
-        List<Measurement<TKey, Double>> values = new LinkedList<>();
-        for (ChartControlGroup<TKey, Double> group : controlGroups) {
-            values.add(Measurement.create(group.getKey(), calculateRange(group.values())));
-        }
+        List<Measurement<TKey, Double>> measurements = controlGroups
+                .stream()
+                .map(group -> Measurement.create(group.getKey(), calculateRange(group.values())))
+                .collect(Collectors.toList());
+        Collections.sort(measurements);
 
-        return values;
+        return measurements;
     }
 
     @Override

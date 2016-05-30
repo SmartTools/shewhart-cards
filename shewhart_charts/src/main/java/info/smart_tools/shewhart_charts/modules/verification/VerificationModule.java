@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface VerificationModule {
     <TKey extends Comparable<TKey>>
-    boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> reasons);
+    boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> reasons)
+            throws VerificationException;
 }

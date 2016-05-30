@@ -66,4 +66,9 @@ public class ControlGroup<TKey extends Comparable<TKey>, TValue extends Number>
     public List<TValue> values() {
         return new ArrayList<>(values.values());
     }
+
+    @Override
+    public int compareTo(@Nonnull ChartControlGroup<TKey, TValue> controlGroup) {
+        return this.key.compareTo(controlGroup.getKey());
+    }
 }

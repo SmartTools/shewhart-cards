@@ -1,5 +1,6 @@
 package info.smart_tools.modules.verification.criteria;
 
+import info.smart_tools.shewhart_charts.modules.verification.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.utils.Measurement;
@@ -26,7 +27,7 @@ public class ThirdCriteriaValidatorTest {
     }
 
     @Test
-    public void verify_Success_Test() {
+    public void verify_Success_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1924));
@@ -51,7 +52,7 @@ public class ThirdCriteriaValidatorTest {
     }
 
     @Test
-    public void verify_Fail_WhenDecrease_Test() {
+    public void verify_Fail_WhenDecrease_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1945));
@@ -89,7 +90,7 @@ public class ThirdCriteriaValidatorTest {
     }
 
     @Test
-    public void verify_Fail_WhenIncrease_Test() {
+    public void verify_Fail_WhenIncrease_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1911));
@@ -127,7 +128,7 @@ public class ThirdCriteriaValidatorTest {
     }
 
     @Test
-    public void verify_Fail_WhenIncreaseAndDecrease_Test() {
+    public void verify_Fail_WhenIncreaseAndDecrease_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1911));

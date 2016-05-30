@@ -1,10 +1,9 @@
 package info.smart_tools.modules.storage;
 
+import info.smart_tools.shewhart_charts.modules.storage.*;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
-import info.smart_tools.shewhart_charts.modules.storage.RAMStorageModule;
-import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,7 +24,7 @@ public class RAMStorageModuleTest {
 
 
     @Before
-    public void setUp() throws ParseException {
+    public void setUp() throws ParseException, InsertGroupsException {
         storageModule = RAMStorageModule.create();
         dateFormat = new SimpleDateFormat();
 
@@ -49,13 +48,13 @@ public class RAMStorageModuleTest {
         when(fourthGroup.getKey()).thenReturn(dateFormat.parse("04/04/2016 04:04 AM"));
         when(fiveGroup.getKey()).thenReturn(dateFormat.parse("05/05/2016 05:05 AM"));
 
-        storageModule.save(controlGroups);
+        storageModule.insert(controlGroups);
     }
 
     @Test
-    public void getControlGroupsByBeginKey() throws ParseException {
+    public void getControlGroupsByBeginKey() throws ParseException, SelectGroupsException {
         Date beginKey = dateFormat.parse("03/03/2016 03:03 AM");
-        List<ChartControlGroup<Date, Double>> groups = storageModule.get(beginKey);
+        List<ChartControlGroup<Date, Double>> groups = storageModule.select(beginKey);
         assertEquals(groups.size(), 3);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("03/03/2016 03:03 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("04/04/2016 04:04 AM"));
@@ -63,10 +62,10 @@ public class RAMStorageModuleTest {
     }
 
     @Test
-    public void getControlGroupsByBeginAndEndKeys() throws ParseException {
+    public void getControlGroupsByBeginAndEndKeys() throws ParseException, SelectGroupsException {
         Date beginKey = dateFormat.parse("02/02/2016 02:02 AM");
         Date endKey = dateFormat.parse("04/04/2016 04:04 AM");
-        List<ChartControlGroup<Date, Double>> groups = storageModule.get(beginKey, endKey);
+        List<ChartControlGroup<Date, Double>> groups = storageModule.select(beginKey, endKey);
         assertEquals(groups.size(), 3);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("02/02/2016 02:02 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("03/03/2016 03:03 AM"));
@@ -74,8 +73,8 @@ public class RAMStorageModuleTest {
     }
 
     @Test
-    public void getAllControlGroups() throws ParseException {
-        List<ChartControlGroup<Date, Double>> groups = storageModule.getAll();
+    public void getAllControlGroups() throws ParseException, SelectGroupsException {
+        List<ChartControlGroup<Date, Double>> groups = storageModule.selectAll();
         assertEquals(groups.size(), 5);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("01/01/2016 01:01 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("02/02/2016 02:02 AM"));
@@ -86,13 +85,14 @@ public class RAMStorageModuleTest {
     }
 
     @Test
-    public void removeControlGroupsByKey() throws ParseException {
+    public void removeControlGroupsByKey()
+            throws ParseException, SelectGroupsException, InsertGroupsException, DeleteGroupsException {
         StorageModule<Date, Double> storage = RAMStorageModule.create();
-        storage.save(controlGroups);
+        storage.insert(controlGroups);
 
         Date key = dateFormat.parse("03/03/2016 03:03 AM");
-        storage.remove(key);
-        List<ChartControlGroup<Date, Double>> groups = storage.getAll();
+        storage.delete(key);
+        List<ChartControlGroup<Date, Double>> groups = storage.selectAll();
         assertEquals(groups.size(), 4);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("01/01/2016 01:01 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("02/02/2016 02:02 AM"));
@@ -101,24 +101,24 @@ public class RAMStorageModuleTest {
     }
 
     @Test
-    public void removeControlGroupsByBeginAndEndKeys() throws ParseException {
+    public void removeControlGroupsByBeginAndEndKeys()
+            throws ParseException, InsertGroupsException, SelectGroupsException, DeleteGroupsException {
         StorageModule<Date, Double> storage = RAMStorageModule.create();
-        storage.save(controlGroups);
+        storage.insert(controlGroups);
         Date beginKey = dateFormat.parse("02/02/2016 02:02 AM");
         Date endKey = dateFormat.parse("04/04/2016 04:04 AM");
-        storage.remove(beginKey, endKey);
-        List<ChartControlGroup<Date, Double>> groups = storage.getAll();
+        storage.delete(beginKey, endKey);
+        List<ChartControlGroup<Date, Double>> groups = storage.selectAll();
         assertEquals(groups.size(), 2);
         assertEquals(groups.get(0).getKey(), dateFormat.parse("01/01/2016 01:01 AM"));
         assertEquals(groups.get(1).getKey(), dateFormat.parse("05/05/2016 05:05 AM"));
     }
 
     @Test
-    public void removeAllControlGroups() {
+    public void removeAllControlGroups() throws InsertGroupsException, DeleteGroupsException {
         StorageModule<Date, Double> storage = RAMStorageModule.create();
-        storage.save(controlGroups);
-        storage.removeAll();
+        storage.insert(controlGroups);
+        storage.deleteAll();
         assertEquals(storage.size(), 0);
     }
-
 }

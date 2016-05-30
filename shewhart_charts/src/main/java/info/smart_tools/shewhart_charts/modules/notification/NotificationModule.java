@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface NotificationModule {
     <TKey extends Comparable<TKey>>
-    void notify(ChartSnapshot<TKey> chartSnapshot, List<SpecialReason<TKey>> errors);
+    void notify(ChartSnapshot<TKey> chartSnapshot, List<SpecialReason<TKey>> errors) throws NotificationException;
 }

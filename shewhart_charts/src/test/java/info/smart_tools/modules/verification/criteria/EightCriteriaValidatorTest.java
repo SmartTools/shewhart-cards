@@ -1,5 +1,6 @@
 package info.smart_tools.modules.verification.criteria;
 
+import info.smart_tools.shewhart_charts.modules.verification.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.utils.Measurement;
@@ -31,7 +32,7 @@ public class EightCriteriaValidatorTest {
      * Bottom bound for area <areaName>B</areaName> := 0,185433333
      */
     @Test
-    public void should_VerifySuccessTest() {
+    public void should_VerifySuccessTest() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.2092));
@@ -66,7 +67,7 @@ public class EightCriteriaValidatorTest {
      * Bottom bound for area <areaName>B</areaName> := 0,185433333
      */
     @Test
-    public void should_VerifyFail_Test() {
+    public void should_VerifyFail_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1992));

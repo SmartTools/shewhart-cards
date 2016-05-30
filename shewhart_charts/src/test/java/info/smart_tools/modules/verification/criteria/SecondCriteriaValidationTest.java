@@ -1,5 +1,6 @@
 package info.smart_tools.modules.verification.criteria;
 
+import info.smart_tools.shewhart_charts.modules.verification.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.utils.Measurement;
@@ -26,7 +27,7 @@ public class SecondCriteriaValidationTest {
     }
 
     @Test
-    public void verify_Success_Test() {
+    public void verify_Success_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.19241));
@@ -48,7 +49,7 @@ public class SecondCriteriaValidationTest {
     }
 
     @Test
-    public void verify_Fail_WhenBelowAndAboveCentralLine_Test() {
+    public void verify_Fail_WhenBelowAndAboveCentralLine_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.19241));

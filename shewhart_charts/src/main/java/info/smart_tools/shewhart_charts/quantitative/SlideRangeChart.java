@@ -14,6 +14,8 @@ import info.smart_tools.shewhart_charts.utils.Measurement;
 import info.smart_tools.shewhart_charts.utils.ValidationUtils;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,14 +80,15 @@ public class SlideRangeChart <TKey extends Comparable<TKey>>
 
     @Override
     protected List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, Double>> controlGroups) {
-        return calculateRanges(controlGroups
-                .stream()
-                .map(group -> Measurement.create(group.getKey(), group
-                        .values()
-                        .get(0)))
-                .collect(Collectors.toList())
-        );
+        List<Measurement<TKey, Double>> measurements = calculateRanges(controlGroups
+                        .stream()
+                        .map(group -> Measurement.create(group.getKey(), group
+                                .values()
+                                .get(0)))
+                        .collect(Collectors.toList()));
+        Collections.sort(measurements);
 
+        return measurements;
     }
 
     @Override

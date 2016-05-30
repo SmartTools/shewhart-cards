@@ -21,7 +21,9 @@ public class GeneralVerificationModule implements VerificationModule {
 
     @Override
     public <TKey extends Comparable<TKey>>
-    boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> errors) {
+    boolean verify(@Nonnull ChartSnapshot<TKey> chartSnapshot, @Nonnull List<SpecialReason<TKey>> errors)
+            throws VerificationException {
+
         for (VerificationModule verificationModule : verificationModules) {
             verificationModule.verify(chartSnapshot, errors);
         }

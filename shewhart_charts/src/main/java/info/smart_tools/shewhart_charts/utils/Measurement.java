@@ -1,6 +1,8 @@
 package info.smart_tools.shewhart_charts.utils;
 
-public class Measurement<TKey extends Comparable<TKey>, TValue extends Number> {
+public class Measurement<TKey extends Comparable<TKey>, TValue extends Number>
+        implements Comparable<Measurement<TKey, TValue>> {
+
     private TKey key;
     private TValue value;
 
@@ -41,4 +43,8 @@ public class Measurement<TKey extends Comparable<TKey>, TValue extends Number> {
         return this.key.equals(measurement.getKey()) && this.value.equals(measurement.getValue());
     }
 
+    @Override
+    public int compareTo(Measurement<TKey, TValue> measurement) {
+        return this.key.compareTo(measurement.getKey());
+    }
 }

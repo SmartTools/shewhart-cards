@@ -13,6 +13,8 @@ import info.smart_tools.shewhart_charts.utils.GroupFieldHelper;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,12 +80,15 @@ public class PChart<TKey extends Comparable<TKey>>
 
     @Override
     protected List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, Double>> controlGroups) {
-        return controlGroups
+        List<Measurement<TKey, Double>> measurements = controlGroups
                 .stream()
                 .map(group -> Measurement.create(
-                                group.getKey(),
-                                group.get(GroupFieldHelper.ALT_CHART_INCORRECT_NUMBER) / controlledNumber))
+                        group.getKey(),
+                        group.get(GroupFieldHelper.ALT_CHART_INCORRECT_NUMBER) / controlledNumber))
                 .collect(Collectors.toList());
+        Collections.sort(measurements);
+
+        return measurements;
     }
 
     @Override

@@ -6,14 +6,15 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface StorageModule<TKey extends Comparable<TKey>, TValue extends Number> {
-    void save(@Nonnull List<ChartControlGroup<TKey, TValue>> groups);
+    void insert(@Nonnull List<ChartControlGroup<TKey, TValue>> groups) throws InsertGroupsException;
     int size();
 
-    List<ChartControlGroup<TKey, TValue>> getAll();
-    List<ChartControlGroup<TKey, TValue>> get(@Nonnull TKey beginKey, @Nonnull TKey endKey);
-    List<ChartControlGroup<TKey, TValue>> get(TKey beginKey);
+    List<ChartControlGroup<TKey, TValue>> selectAll() throws SelectGroupsException;
+    List<ChartControlGroup<TKey, TValue>> select(@Nonnull TKey beginKey, @Nonnull TKey endKey)
+            throws SelectGroupsException;
+    List<ChartControlGroup<TKey, TValue>> select(TKey beginKey) throws SelectGroupsException;
 
-    void remove(@Nonnull TKey key);
-    void remove(@Nonnull TKey beginKey, @Nonnull TKey endKey);
-    void removeAll();
+    void delete(@Nonnull TKey key) throws DeleteGroupsException;
+    void delete(@Nonnull TKey beginKey, @Nonnull TKey endKey) throws DeleteGroupsException;
+    void deleteAll() throws DeleteGroupsException;
 }

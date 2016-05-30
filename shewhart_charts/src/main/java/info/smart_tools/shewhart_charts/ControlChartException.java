@@ -1,8 +1,6 @@
 package info.smart_tools.shewhart_charts;
 
-import info.smart_tools.shewhart_charts.sensor.SensorException;
-
-public class ControlChartException extends SensorException {
+public class ControlChartException extends Exception {
     public ControlChartException(String message) {
         super(message);
     }

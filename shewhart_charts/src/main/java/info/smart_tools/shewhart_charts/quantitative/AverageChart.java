@@ -13,6 +13,7 @@ import info.smart_tools.shewhart_charts.utils.Coefficients;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,8 +51,11 @@ public class AverageChart<TKey extends Comparable<TKey>>
     }
 
     @Override
-    public ChartSnapshot<TKey> doSnapshot(@Nonnull List<ChartControlGroup<TKey, Double>> controlGroups) {
+    public ChartSnapshot<TKey> doSnapshot(@Nonnull List<ChartControlGroup<TKey, Double>> controlGroups)
+            throws ControlChartException {
+
         checkOnNull(controlGroups, "Control groups");
+        checkGroups(controlGroups);
 
         List<Measurement<TKey, Double>> values = calculateValues(controlGroups);
         Double centralLine = calculateCentralLine(values);
@@ -76,13 +80,14 @@ public class AverageChart<TKey extends Comparable<TKey>>
     }
 
     @Override
-    protected List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, Double>> groups) {
-        List<Measurement<TKey, Double>> resultValues = new LinkedList<>();
-        for (ChartControlGroup<TKey, Double> group : groups) {
-            resultValues.add(Measurement.create(group.getKey(), calculateAverage(group.values())));
-        }
+    protected List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, Double>> controlGroups) {
+        List<Measurement<TKey, Double>> measurements = controlGroups
+                .stream()
+                .map(group -> Measurement.create(group.getKey(), calculateAverage(group.values())))
+                .collect(Collectors.toList());
+        Collections.sort(measurements);
 
-        return resultValues;
+        return measurements;
     }
 
     @Override
@@ -109,13 +114,12 @@ public class AverageChart<TKey extends Comparable<TKey>>
             double tabularCoefficient
     ) {
         double averageRange = calculateAverage(controlGroups
+                .stream()
+                .map(group -> calculateRange(group
+                        .values()
                         .stream()
-                        .map(group -> calculateRange(group
-                                .getAll()
-                                .values()
-                                .stream()
-                                .collect(Collectors.toList())))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList())))
+                .collect(Collectors.toList())
         );
 
         return averageRange * tabularCoefficient;

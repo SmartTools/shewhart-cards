@@ -1,11 +1,16 @@
 package info.smart_tools.shewhart_charts;
 
 import info.smart_tools.shewhart_charts.groups.ChartControlGroup;
+import info.smart_tools.shewhart_charts.modules.CorruptedModuleException;
+import info.smart_tools.shewhart_charts.modules.notification.NotificationException;
 import info.smart_tools.shewhart_charts.modules.notification.NotificationModule;
+import info.smart_tools.shewhart_charts.modules.storage.DeleteGroupsException;
+import info.smart_tools.shewhart_charts.modules.storage.InsertGroupsException;
+import info.smart_tools.shewhart_charts.modules.storage.SelectGroupsException;
 import info.smart_tools.shewhart_charts.modules.storage.StorageModule;
+import info.smart_tools.shewhart_charts.modules.verification.VerificationException;
 import info.smart_tools.shewhart_charts.modules.verification.VerificationModule;
 import info.smart_tools.shewhart_charts.modules.verification.reasons.SpecialReason;
-import info.smart_tools.shewhart_charts.sensor.Sensor;
 import info.smart_tools.shewhart_charts.snapshots.ChartSnapshot;
 import info.smart_tools.shewhart_charts.utils.Measurement;
 
@@ -16,11 +21,16 @@ import java.util.List;
 import static info.smart_tools.shewhart_charts.utils.ValidationUtils.checkOnNull;
 
 public abstract class SmartControlChart<TValue extends Number, TKey extends Comparable<TKey>>
-        implements ControlChart<TValue, TKey>, Sensor<List<ChartControlGroup<TKey, TValue>>> {
+        implements ControlChart<TValue, TKey> {
+
+    private final String corruptedModuleMsg = "module is corrupted and should be replaced. Unhandled exception: ";
 
     private StorageModule<TKey, TValue> storageModule;
     private VerificationModule verificationModule;
     private NotificationModule notificationModule;
+
+    private ChartSnapshot<TKey> lastFullSnapshot;
+    private Boolean lastSnapshotStatus;
 
     protected SmartControlChart(
             @Nonnull StorageModule<TKey, TValue> storageModule,
@@ -31,32 +41,61 @@ public abstract class SmartControlChart<TValue extends Number, TKey extends Comp
         this.storageModule = storageModule;
         this.verificationModule = verificationModule;
         this.notificationModule = notificationModule;
+
+        this.lastFullSnapshot = null;
+        this.lastSnapshotStatus = Boolean.FALSE;
     }
 
     @Override
     public List<SpecialReason<TKey>> verify(@Nonnull ChartSnapshot<TKey> chartSnapshot) throws ControlChartException {
         checkOnNull(chartSnapshot, "Chart snapshot");
         List<SpecialReason<TKey>> errors = new LinkedList<>();
-        verificationModule.verify(chartSnapshot, errors);
+        try {
+            verificationModule.verify(chartSnapshot, errors);
+        } catch (VerificationException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Verification" + corruptedModuleMsg + e.getMessage(), e);
+        }
 
         return errors;
     }
 
-    @Override
     public void report() throws ControlChartException {
         ChartSnapshot<TKey> snapshot = doSnapshot();
         List<SpecialReason<TKey>> errors = this.verify(snapshot);
-        notificationModule.notify(snapshot, errors);
+        try {
+            notificationModule.notify(snapshot, errors);
+        } catch (NotificationException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Notification" + corruptedModuleMsg + e.getMessage(), e);
+        }
     }
 
     public ChartSnapshot<TKey> doSnapshot() throws ControlChartException {
-        List<ChartControlGroup<TKey, TValue>> controlGroups = storageModule.getAll();
-        return doSnapshot(controlGroups);
+        List<ChartControlGroup<TKey, TValue>> controlGroups;
+        try {
+            controlGroups = storageModule.selectAll();
+        } catch (SelectGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
+
+        return lastFullSnapshot = lastSnapshotStatus ? lastFullSnapshot : doSnapshot(controlGroups);
     }
 
     public ChartSnapshot<TKey> doSnapshot(@Nonnull TKey beginKey) throws ControlChartException {
         checkOnNull(beginKey, "Begin key");
-        List<ChartControlGroup<TKey, TValue>> controlGroups = storageModule.get(beginKey);
+        List<ChartControlGroup<TKey, TValue>> controlGroups;
+        try {
+            controlGroups = storageModule.select(beginKey);
+        } catch (SelectGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
 
         return doSnapshot(controlGroups);
     }
@@ -64,28 +103,62 @@ public abstract class SmartControlChart<TValue extends Number, TKey extends Comp
     public ChartSnapshot<TKey> doSnapshot(@Nonnull TKey beginKey, @Nonnull TKey endKey) throws ControlChartException {
         checkOnNull(beginKey, "Begin key");
         checkOnNull(endKey, "End key");
-        List<ChartControlGroup<TKey, TValue>> controlGroups = storageModule.get(beginKey, endKey);
+        List<ChartControlGroup<TKey, TValue>> controlGroups;
+        try {
+            controlGroups = storageModule.select(beginKey, endKey);
+        } catch (SelectGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
 
         return doSnapshot(controlGroups);
     }
 
-    public void update(@Nonnull List<ChartControlGroup<TKey, TValue>> controlGroups) throws ControlChartException {
+    public SmartControlChart<TValue, TKey> update(@Nonnull List<ChartControlGroup<TKey, TValue>> controlGroups)
+            throws ControlChartException {
+
         checkOnNull(controlGroups, "Control groups");
         checkGroups(controlGroups);
-        storageModule.save(controlGroups);
-        this.report();
+        try {
+            storageModule.insert(controlGroups);
+        } catch (InsertGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
+
+        return this;
     }
 
-    public void forget(@Nonnull TKey key) throws ControlChartException {
-        storageModule.remove(key);
+    public void remove(@Nonnull TKey key) throws ControlChartException {
+        try {
+            storageModule.delete(key);
+        } catch (DeleteGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
     }
 
-    public void forget(@Nonnull TKey beginKey, @Nonnull TKey endKey) throws ControlChartException {
-        storageModule.remove(beginKey, endKey);
+    public void remove(@Nonnull TKey beginKey, @Nonnull TKey endKey) throws ControlChartException {
+        try {
+            storageModule.delete(beginKey, endKey);
+        } catch (DeleteGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
     }
 
-    public void forgetAll() throws ControlChartException {
-        storageModule.removeAll();
+    public void removeAll() throws ControlChartException {
+        try {
+            storageModule.deleteAll();
+        } catch (DeleteGroupsException e) {
+            throw new ControlChartException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CorruptedModuleException("Storage" + corruptedModuleMsg + e.getMessage(), e);
+        }
     }
 
     protected abstract List<Measurement<TKey, Double>> calculateValues(List<ChartControlGroup<TKey, TValue>> groups);
@@ -107,5 +180,4 @@ public abstract class SmartControlChart<TValue extends Number, TKey extends Comp
         checkOnNull(verificationModule, "Verification module");
         checkOnNull(notificationModule, "Notification module");
     }
-
 }

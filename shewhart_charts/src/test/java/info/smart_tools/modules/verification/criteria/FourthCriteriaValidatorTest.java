@@ -1,5 +1,6 @@
 package info.smart_tools.modules.verification.criteria;
 
+import info.smart_tools.shewhart_charts.modules.verification.VerificationException;
 import org.junit.Before;
 import org.junit.Test;
 import info.smart_tools.shewhart_charts.utils.Measurement;
@@ -27,7 +28,7 @@ public class FourthCriteriaValidatorTest {
     }
 
     @Test
-    public void should_VerifySuccess_Test() {
+    public void should_VerifySuccess_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1924));
@@ -52,7 +53,7 @@ public class FourthCriteriaValidatorTest {
     }
 
     @Test
-    public void should_VerifyFail_Test() {
+    public void should_VerifyFail_Test() throws VerificationException {
         List<SpecialReason<Integer>> errors = new ArrayList<>();
         List<Measurement<Integer, Double>> values = new LinkedList<>();
         values.add(Measurement.create(1, 0.1926));
